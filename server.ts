@@ -1,8 +1,3 @@
-/**
- * AffiniProt DL - Full-Stack Express Server with Vite Dev Middlewares
- * Runs on Port 3000 with scientific REST API routes.
- */
-
 import express from 'express';
 import path from 'path';
 import fs from 'fs';
@@ -11,53 +6,32 @@ import dotenv from 'dotenv';
 import { apiRouter } from './src/server/apiRoutes.ts';
 
 dotenv.config();
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const app = express();
+app.use(express.json({ limit: '4mb' }));
+app.get('/health', (_req, res) => res.json({ status: 'healthy' }));
+app.use('/api', apiRouter);
 
-async function startServer() {
-  const app = express();
-  const PORT = parseInt(process.env.PORT || '3000', 10);
-  const distPath = path.resolve(__dirname, 'dist');
-  const distIndexExists = fs.existsSync(path.resolve(distPath, 'index.html'));
-  const isProduction = process.env.NODE_ENV === 'production' || distIndexExists;
+// Only run our own server/static hosting when NOT on Vercel
+if (!process.env.VERCEL) {
+  (async () => {
+    const PORT = parseInt(process.env.PORT || '3000', 10);
+    const distPath = path.resolve(__dirname, 'dist');
+    const isProduction =
+      process.env.NODE_ENV === 'production' ||
+      fs.existsSync(path.join(distPath, 'index.html'));
 
-  // Body parser with size limits
-  app.use(express.json({ limit: '10mb' }));
-  app.use(express.urlencoded({ extended: true, limit: '10mb' }));
-
-  // Top-level health check endpoint for deployment container liveness probes
-  app.get('/health', (_req, res) => {
-    res.json({ status: 'healthy', timestamp: new Date().toISOString() });
-  });
-
-  // API router
-  app.use('/api', apiRouter);
-
-  if (!isProduction) {
-    // Development mode: mount Vite dev server middlewares
-    const { createServer: createViteServer } = await import('vite');
-    const vite = await createViteServer({
-      server: { middlewareMode: true },
-      appType: 'spa',
-    });
-    app.use(vite.middlewares);
-    console.log(`[AffiniProt-DL] Vite dev middleware mounted`);
-  } else {
-    // Production mode: serve built assets from dist
-    app.use(express.static(distPath));
-    app.get('*', (_req, res) => {
-      res.sendFile(path.resolve(distPath, 'index.html'));
-    });
-    console.log(`[AffiniProt-DL] Serving production dist from ${distPath}`);
-  }
-
-  app.listen(PORT, '0.0.0.0', () => {
-    console.log(`[AffiniProt-DL] Server running on http://0.0.0.0:${PORT}`);
-  });
+    if (!isProduction) {
+      const { createServer } = await import('vite');
+      const vite = await createServer({ server: { middlewareMode: true }, appType: 'spa' });
+      app.use(vite.middlewares);
+    } else {
+      app.use(express.static(distPath));
+      app.get('*', (_req, res) => res.sendFile(path.join(distPath, 'index.html')));
+    }
+    app.listen(PORT, '0.0.0.0', () => console.log(`Running on ${PORT}`));
+  })();
 }
 
-startServer().catch((err) => {
-  console.error('[AffiniProt-DL] Fatal server boot failure:', err);
-  process.exit(1);
-});
+export default app;
