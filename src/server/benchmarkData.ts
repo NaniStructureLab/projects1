@@ -4,7 +4,7 @@
  * Nikam, Yugandhar, and Gromiha (2023) and the Protein-Protein Binding Affinity Benchmark.
  */
 
-import { FunctionalClassId } from './featureRegistry.ts';
+import type { FunctionalClassId } from './featureRegistry.ts';
 
 export interface BenchmarkComplex {
   pdbId: string;

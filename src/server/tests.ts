@@ -7,7 +7,7 @@
 import { parseFasta, CANONICAL_AMINO_ACIDS } from './fastaParser.ts';
 import { extractPairwiseDescriptors, calculateNetCharge, calculateIsoelectricPoint } from './featureExtractor.ts';
 import { predictBindingAffinity, deltaGToKd, formatMolarConcentration } from './modelEngine.ts';
-import { FUNCTIONAL_CLASSES, FunctionalClassId } from './featureRegistry.ts';
+import { FUNCTIONAL_CLASSES, type FunctionalClassId } from './featureRegistry.ts';
 import { VERIFIED_BENCHMARK_COMPLEXES } from './benchmarkData.ts';
 
 interface TestResult {

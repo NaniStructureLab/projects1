@@ -5,6 +5,7 @@
 
 import express from 'express';
 import path from 'path';
+import fs from 'fs';
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
 import { apiRouter } from './src/server/apiRoutes.ts';
@@ -17,11 +18,18 @@ const __dirname = path.dirname(__filename);
 async function startServer() {
   const app = express();
   const PORT = parseInt(process.env.PORT || '3000', 10);
-  const isProduction = process.env.NODE_ENV === 'production';
+  const distPath = path.resolve(__dirname, 'dist');
+  const distIndexExists = fs.existsSync(path.resolve(distPath, 'index.html'));
+  const isProduction = process.env.NODE_ENV === 'production' || distIndexExists;
 
   // Body parser with size limits
   app.use(express.json({ limit: '10mb' }));
   app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
+  // Top-level health check endpoint for deployment container liveness probes
+  app.get('/health', (_req, res) => {
+    res.json({ status: 'healthy', timestamp: new Date().toISOString() });
+  });
 
   // API router
   app.use('/api', apiRouter);
@@ -37,7 +45,6 @@ async function startServer() {
     console.log(`[AffiniProt-DL] Vite dev middleware mounted`);
   } else {
     // Production mode: serve built assets from dist
-    const distPath = path.resolve(__dirname, 'dist');
     app.use(express.static(distPath));
     app.get('*', (_req, res) => {
       res.sendFile(path.resolve(distPath, 'index.html'));

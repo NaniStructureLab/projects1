@@ -3,7 +3,7 @@
  * Implements strict REST endpoints according to Section 13 specification.
  */
 
-import { Router, Request, Response } from 'express';
+import { Router, type Request, type Response } from 'express';
 import { parseFasta } from './fastaParser.ts';
 import { extractPairwiseDescriptors } from './featureExtractor.ts';
 import { 
@@ -14,7 +14,7 @@ import {
 import { 
   FUNCTIONAL_CLASSES, 
   FEATURE_REGISTRY, 
-  FunctionalClassId 
+  type FunctionalClassId 
 } from './featureRegistry.ts';
 import { 
   BENCHMARK_METRICS, 

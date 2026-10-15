@@ -3,7 +3,7 @@
  * Extracts verified sequence and predicted structure descriptors for protein pairs.
  */
 
-import { ParsedSequence } from './fastaParser.ts';
+import type { ParsedSequence } from './fastaParser.ts';
 
 // Kyte-Doolittle Hydropathy Index (1982)
 export const KYTE_DOOLITTLE: Record<string, number> = {

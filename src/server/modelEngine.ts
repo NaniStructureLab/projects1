@@ -4,8 +4,8 @@
  * feed-forward multi-layer neural network inference, and thermodynamic Kd conversion.
  */
 
-import { FunctionalClassId, FUNCTIONAL_CLASSES } from './featureRegistry.ts';
-import { PairwiseDescriptors } from './featureExtractor.ts';
+import { FUNCTIONAL_CLASSES, type FunctionalClassId } from './featureRegistry.ts';
+import type { PairwiseDescriptors } from './featureExtractor.ts';
 
 export interface ModelPredictionResult {
   predictedDeltaG: number; // kcal/mol
