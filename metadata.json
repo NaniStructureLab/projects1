@@ -1,0 +1,6 @@
+{
+  "name": "AffiniProt DL: Protein–Protein Binding Affinity Predictor",
+  "description": "Scientific deep learning web server for predicting protein–protein binding free energy (ΔG) and affinity classification from amino acid sequences, grounded in Nikam, Yugandhar, and Gromiha (2023).",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
